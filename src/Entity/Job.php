@@ -28,7 +28,7 @@ class Job
     private $title;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Employee", mappedBy="job", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Employee", mappedBy="job", cascade={"all"}, orphanRemoval=true)
      */
     private $employees;
 

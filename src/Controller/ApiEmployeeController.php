@@ -80,4 +80,41 @@ class ApiEmployeeController extends AbstractController
 
         return new Response(null, 201);
     }
+
+    /**
+     * @Route("api/employees/{employee}/edit", name="api_employee_patch", methods={"POST"}, requirements={"job"="\d+"})
+     */
+    public function update(Request $request, Employee $employee)
+    {
+        if (!empty($request->request->get('firstname'))) {
+            $employee->setFirstname($request->request->get('firstname'));
+        }
+        if (!empty($request->request->get('lastname'))) {
+            $employee->setLastname($request->request->get('lastname'));
+        }
+        if (!empty($request->request->get('employement_date'))) {
+            $employee->setEmployementDate($request->request->get('employement_date'));
+        }
+        if (!empty($request->request->get('job_id'))) {
+            $employee->setJob($this->getDoctrine()->getRepository(Job::class)->find($request->request->get('job_id')));
+        }
+        $manager = $this->getDoctrine()->getManager();
+        $manager->flush();
+
+        return new Response(null, 202);
+    }
+
+    /**
+     * @Route("api/employees/{employee}", name="api_employee_delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Employee $employee)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($employee);
+
+        $manager->flush;
+
+        return new Response(null,200);
+    }
+
 }
