@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Job;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -28,7 +29,7 @@ class ApiJobController extends AbstractController
     }
 
     /**
-     * @Route("/api/jobs", name="api_job")
+     * @Route("/api/jobs", name="api_job", methods={"GET"})
      */
     public function index()
     {
@@ -40,5 +41,47 @@ class ApiJobController extends AbstractController
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
+    }
+
+    /**
+     * @Route("api/jobs", name="api_job", methods={"POST"})
+     */
+    public function create(Request $request)
+    {
+        $job = new Job;
+        $job->setTitle($request->request->get('title'));
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($job);
+        $manager->flush();
+
+        return new Response(null, 201);
+    }
+
+    /**
+     * @Route("api/jobs/{job}/edit", name="api_job_patch", methods={"POST"}, requirements={"job"="\d+"})
+     */
+    public function update(Request $request, Job $job)
+    {
+        if (!empty($request->request->get('title'))) {
+            $job->setTitle($request->request->get('title'));
+        }
+        $manager = $this->getDoctrine()->getManager();
+        $manager->flush();
+
+        return new Response(null, 202);
+    }
+
+    /**
+     * @Route("api/jobs/{job}", name="api_job_delete", methods={"DELETE"}, requirements={"job"="\d+"})
+     */
+    public function delete(Request $request, Job $job)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($job);
+
+        $manager->flush();
+
+        return new Response(null, 200);
     }
 }
