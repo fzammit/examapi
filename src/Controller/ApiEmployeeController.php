@@ -112,7 +112,7 @@ class ApiEmployeeController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
         $manager->remove($employee);
 
-        $manager->flush;
+        $manager->flush();
 
         return new Response(null,200);
     }
