@@ -4,11 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\Employee;
 use App\Repository\JobRepository;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
 
-class EmployeeFixtures extends Fixture
+class EmployeeFixtures extends Fixture implements DependentFixtureInterface
 {
     private $jobRepository;
 
@@ -25,10 +26,17 @@ class EmployeeFixtures extends Fixture
             $employee->setFirstname($faker->firstName);
             $employee->setLastname($faker->lastName);
             $employee->setEmployementDate($faker->dateTime);
-            $employee->setJob($this->jobRepository->find(rand(6, 10)));
+            $employee->setJob($this->jobRepository->find( rand(6, 10)));
             $manager->persist($employee);
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return array(
+            JobFixtures::class,
+        );
     }
 }
