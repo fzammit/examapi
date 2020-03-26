@@ -29,12 +29,29 @@ class ApiJobController extends AbstractController
     }
 
     /**
-     * @Route("/api/jobs", name="api_job", methods={"GET"})
+     * @Route("/api/jobs", name="api_job_index", methods={"GET"})
      */
     public function index()
     {
         $jobs = $this->getDoctrine()->getRepository(Job::class)->findAll();
+
         $data = $this->serializer->normalize($jobs, null, ['groups' => 'all_jobs']);
+
+        $jsonContent = $this->serializer->serialize($data, 'json');
+
+        $response = new Response($jsonContent);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/api/jobs/{job}", name="api_job_one", methods={"GET"}, requirements={"job"="\d+"})
+     */
+    public function findOne(Job $job)
+    {
+        $data = $this->serializer->normalize($job, null, ['groups' => 'all_jobs']);
+
         $jsonContent = $this->serializer->serialize($data, 'json');
 
         $response = new Response($jsonContent);
